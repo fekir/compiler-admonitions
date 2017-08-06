@@ -1,5 +1,5 @@
 ##################################################################
-# Settings for the GCC Compiler
+# Settings for the GCC (>=4.8) Compiler
 
 ##################################################################
 # language, use CMAKE_CXX_STANDARD, CMAKE_CXX_STANDARD_REQUIRED, CXX_EXTENSIONS if possible
@@ -10,22 +10,56 @@
 # unlike msvc, -Wall does not enable all warnings
 
 # generic warnings/errors
-add_compile_options(-Wall -Wextra)
-add_compile_options(-pedantic-errors -Werror=pedantic -Werror=main -Wunreachable-code -Wunused -Wunknown-pragmas -Werror=return-type)
+add_compile_options(
+	-Wall
+	-Wextra
+	-pedantic-errors
+	-Werror=pedantic
+	-Werror=main
+	-Wunreachable-code
+	-Wunused
+	-Wunknown-pragmas
+	-Werror=return-type
+)
 
 # portability
-add_compile_options(-Werror=multichar -Werror=address -Werror=sequence-point -Werror=cpp -Werror=strict-aliasing -Werror=strict-null-sentinel)
+add_compile_options(
+	-Werror=multichar
+	-Werror=address
+	-Werror=sequence-point
+	-Werror=cpp
+	-Werror=strict-aliasing
+	-Werror=strict-null-sentinel
+)
 
 # extensions
-add_compile_options(-Werror=pointer-arith -fno-nonansi-builtins -fstrict-enums -fvisibility-inlines-hidden)
+add_compile_options(
+	-Werror=pointer-arith
+	-fno-nonansi-builtins
+	-fstrict-enums
+	-fvisibility-inlines-hidden
+)
 
 # multiple declaration, shadowing, eval undefined identifier
-add_compile_options(-Wshadow -Wundef -Werror=redundant-decls)
+add_compile_options(
+	-Wshadow
+	-Wundef
+	-Werror=redundant-decls
+)
 
-add_compile_options(-Werror=ignored-qualifiers)
+add_compile_options(
+	-Werror=ignored-qualifiers
+)
 
 # class/structs and init
-add_compile_options(-Wctor-dtor-privacy -Werror=non-virtual-dtor -Werror=reorder -Werror=uninitialized -Werror=maybe-uninitialized -Werror=delete-non-virtual-dtor)
+add_compile_options(
+	-Wctor-dtor-privacy
+	-Werror=non-virtual-dtor
+	-Werror=reorder
+	-Werror=uninitialized
+	-Werror=maybe-uninitialized
+	-Werror=delete-non-virtual-dtor
+)
 if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 6)
 	add_compile_options(-Werror=init-self -Werror=memset-transposed-args)
 elseif(CMAKE_CXX_COMPILER_VERSION LESSER_EQUAL 4)
@@ -34,7 +68,10 @@ endif()
 
 
 # switch/branches
-add_compile_options(-Wswitch-default -Wswitch-enum)
+add_compile_options(
+	-Wswitch-default
+	-Wswitch-enum
+)
 if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 6)
 	add_compile_options(-Wduplicated-cond)
 	if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 7)
@@ -43,23 +80,48 @@ if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 6)
 endif()
 
 # nullptr and casts warnings (may generate a lot of warnings when interacting with old code or C code)
-add_compile_options(-Wzero-as-null-pointer-constant -Wold-style-cast -Wuseless-cast)
-add_compile_options(-Wnonnull -Wcast-qual -Wcast-align -Werror=null-dereference)
+add_compile_options(
+	-Wzero-as-null-pointer-constant
+	-Wold-style-cast
+	-Wuseless-cast
+	-Wnonnull
+	-Wcast-qual
+	-Wcast-align
+	-Werror=null-dereference
+)
 
 # arithmetic/numeric warnings
-add_compile_options(-Wfloat-equal -Wsign-compare -Werror=conversion  -Wsign-promo -Werror=shift-overflow -ftrapv)
+add_compile_options(
+	-Wfloat-equal
+	-Wsign-compare
+	-Werror=conversion
+	-Wsign-promo
+	-Werror=shift-overflow
+	-ftrapv
+)
 
 # logical operations
-add_compile_options(-Wlogical-op)
+add_compile_options(
+	-Wlogical-op
+)
 
 # possible code structure problem
-add_compile_options(-Wdisabled-optimization)
+add_compile_options(
+	-Wdisabled-optimization
+)
 
 # formatting
-add_compile_options(-Wformat=2 -Werror=format -Werror=format-security -Werror=format-extra-args)
+add_compile_options(
+	-Wformat=2
+	-Werror=format
+	-Werror=format-security
+	-Werror=format-extra-args
+)
 
 # exception safety
-add_compile_options(-Werror=terminate)
+add_compile_options(
+	-Werror=terminate
+)
 
 # operations on booleans
 if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 6)
@@ -75,8 +137,14 @@ add_compile_options(-Wsuggest-final-types -Wsuggest-final-methods -Wsuggest-over
 add_compile_options(-Wsuggest-attribute=format -Wmissing-format-attribute) 
 
 # memory
-# write-strings seems to get overritten by pedantic
-add_compile_options(-Werror=vla -Werror=array-bounds -Werror=write-strings -Werror=overflow)
+# write-strings seems to get overritten by pedantic in older gcc versions
+add_compile_options(
+	-Waddress
+	-Werror=vla
+	-Werror=array-bounds
+	-Werror=write-strings
+	-Werror=overflow
+)
 if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 7)
 	add_compile_options(-Werror=alloc-zero -Werror=alloca -Werror=stringop-overflow)
 endif()
@@ -90,7 +158,9 @@ endif()
 
 ##################################################################
 # project structure
-add_compile_options(-Wmissing-include-dirs)
+add_compile_options(
+	-Wmissing-include-dirs
+)
 
 
 ##################################################################
