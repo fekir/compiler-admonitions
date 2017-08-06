@@ -18,14 +18,15 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	include(clang_flags)
 endif()
 
-add_executable(${PROJECT_NAME} main.cpp)
-
 # set standard, without extensions
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# or do it per-target
+
+add_executable(${PROJECT_NAME} main.cpp)
+
+# set standard on target
 set_target_properties(${PROJECT_NAME} PROPERTIES
 	CXX_STANDARD 14
 	CXX_STANDARD_REQUIRED ON
