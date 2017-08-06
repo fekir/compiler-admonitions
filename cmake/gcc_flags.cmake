@@ -1,5 +1,5 @@
 ##################################################################
-# Settings for the GCC (>=4.8) Compiler
+# Settings for the GCC compiler (should work with >=4.8)
 
 ##################################################################
 # language, use CMAKE_CXX_STANDARD, CMAKE_CXX_STANDARD_REQUIRED, CXX_EXTENSIONS if possible
@@ -19,6 +19,7 @@ add_compile_options(
 	-Wunreachable-code
 	-Wunused
 	-Wunknown-pragmas
+	-Wpragmas
 	-Werror=return-type
 )
 
@@ -30,6 +31,7 @@ add_compile_options(
 	-Werror=cpp
 	-Werror=strict-aliasing
 	-Werror=strict-null-sentinel
+	-Werror=trigraphs
 )
 
 # extensions
@@ -47,8 +49,42 @@ add_compile_options(
 	-Werror=redundant-decls
 )
 
+# others
 add_compile_options(
-	-Werror=ignored-qualifiers
+	-Waggressive-loop-optimizations # generic UB
+	-Werror=free-nonheap-object     # ponter arith
+	-Wignored-qualifiers
+	-Wmissing-declarations   # should set function in anonym namespace or declare it to avoid possible clashes
+	-Wnarrowing
+	-Wpacked
+	-Wparentheses
+	-Werror=return-local-addr
+
+	# unused /unnecessary code
+	-Wunused-but-set-parameter
+	-Wunused-but-set-variable
+	-Wunused-function
+	-Wunused-label
+	-Wunused-macros
+	-Wunused-parameter
+	-Wunused-result
+	-Wunused-value
+	-Wunused-variable
+	-Wuseless-cast
+
+	-Wvarargs
+)
+
+# macro
+add_compile_options(
+	-Werror=builtin-macro-redefined
+	-Werror=endif-labels
+)
+
+# deprecation
+add_compile_options(
+	-Wdeprecated
+	-Wdeprecated-declarations
 )
 
 # class/structs and init
@@ -59,18 +95,25 @@ add_compile_options(
 	-Werror=uninitialized
 	-Werror=maybe-uninitialized
 	-Werror=delete-non-virtual-dtor
+	-Winherited-variadic-ctor
+	-Werror=init-self
+	-Werror=invalid-offsetof
+	-Wmissing-field-initializers
+	-Wvirtual-move-assign
 )
 if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 6)
-	add_compile_options(-Werror=init-self -Werror=memset-transposed-args)
+	add_compile_options(-Werror=memset-transposed-args)
 elseif(CMAKE_CXX_COMPILER_VERSION LESSER_EQUAL 4)
 	add_compile_options(-Wno-missing-field-initializers) # otherwise S s = {}; issues warning
 endif()
 
-
 # switch/branches
 add_compile_options(
+	-Wswitch
 	-Wswitch-default
 	-Wswitch-enum
+	-Wempty-body
+	-Wenum-compare
 )
 if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 6)
 	add_compile_options(-Wduplicated-cond)
@@ -88,15 +131,19 @@ add_compile_options(
 	-Wcast-qual
 	-Wcast-align
 	-Werror=null-dereference
+	-Wconversion-null
+	-Wint-to-pointer-cast
 )
 
 # arithmetic/numeric warnings
 add_compile_options(
+	-Wconversion
 	-Wfloat-equal
 	-Wsign-compare
-	-Werror=conversion
 	-Wsign-promo
+	-Wsign-conversion
 	-Werror=shift-overflow
+	-Werror=div-by-zero
 	-ftrapv
 )
 
@@ -112,10 +159,13 @@ add_compile_options(
 
 # formatting
 add_compile_options(
-	-Wformat=2
+	-Wformat-nonliteral
+	-Wformat-y2k
 	-Werror=format
 	-Werror=format-security
 	-Werror=format-extra-args
+	-Wformat-contains-nul
+	-Wformat-zero-length
 )
 
 # exception safety
@@ -131,19 +181,27 @@ if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 6)
 	endif()
 endif()
 # suggestions for improving code
-#  inheritance
-add_compile_options(-Wsuggest-final-types -Wsuggest-final-methods -Wsuggest-override)
-# formatting
-add_compile_options(-Wsuggest-attribute=format -Wmissing-format-attribute) 
+add_compile_options(
+	#  inheritance
+	-Wsuggest-final-types
+	-Wsuggest-final-methods
+	-Wsuggest-override
+	# formatting
+	-Wsuggest-attribute=format
+	# function signature
+	-Wsuggest-attribute=const
+	-Wsuggest-attribute=pure
+	-Wsuggest-attribute=noreturn
+)
 
 # memory
-# write-strings seems to get overritten by pedantic in older gcc versions
 add_compile_options(
 	-Waddress
 	-Werror=vla
 	-Werror=array-bounds
 	-Werror=write-strings
 	-Werror=overflow
+	-Wsizeof-pointer-memaccess
 )
 if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 7)
 	add_compile_options(-Werror=alloc-zero -Werror=alloca -Werror=stringop-overflow)
