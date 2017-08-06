@@ -74,6 +74,12 @@ add_compile_options(
 
 	-Wvarargs
 )
+if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
+	add_compile_options(
+		-Wodr
+		-Wsized-deallocation
+	)
+endif()
 
 # macro
 add_compile_options(
@@ -101,7 +107,7 @@ add_compile_options(
 	-Wmissing-field-initializers
 	-Wvirtual-move-assign
 )
-if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 6)
+if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
 	add_compile_options(-Werror=memset-transposed-args)
 elseif(CMAKE_CXX_COMPILER_VERSION LESSER_EQUAL 4)
 	add_compile_options(-Wno-missing-field-initializers) # otherwise S s = {}; issues warning
@@ -146,6 +152,14 @@ add_compile_options(
 	-Werror=div-by-zero
 	-ftrapv
 )
+if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
+	add_compile_options(
+		-Werror=shift-count-negative
+		-Werror=shift-count-overflow
+	)
+endif()
+
+
 
 # logical operations
 add_compile_options(
@@ -159,6 +173,7 @@ add_compile_options(
 
 # formatting
 add_compile_options(
+	-Wformat=2
 	-Wformat-nonliteral
 	-Wformat-y2k
 	-Werror=format
@@ -167,6 +182,11 @@ add_compile_options(
 	-Wformat-contains-nul
 	-Wformat-zero-length
 )
+if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
+	add_compile_options(
+		-Wformat-signedness
+	)
+endif()
 
 # exception safety
 add_compile_options(
@@ -174,18 +194,21 @@ add_compile_options(
 )
 
 # operations on booleans
-if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 6)
-	add_compile_options(-Werror=bool-compare)
+if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
+	add_compile_options(
+		-Werror=bool-compare
+		-Wlogical-not-parentheses
+		-Wswitch-bool
+	)
 	if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 7)
-		add_compile_options(-Werror=bool-operation -Wint-in-bool-context)
+		add_compile_options(
+			-Werror=bool-operation
+			-Wint-in-bool-context
+		)
 	endif()
 endif()
 # suggestions for improving code
 add_compile_options(
-	#  inheritance
-	-Wsuggest-final-types
-	-Wsuggest-final-methods
-	-Wsuggest-override
 	# formatting
 	-Wsuggest-attribute=format
 	# function signature
@@ -193,6 +216,15 @@ add_compile_options(
 	-Wsuggest-attribute=pure
 	-Wsuggest-attribute=noreturn
 )
+if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
+	add_compile_options(
+		# inheritance
+		-Wsuggest-final-methods
+		-Wsuggest-final-types
+		-Wsuggest-override
+	)
+endif()
+
 
 # memory
 add_compile_options(
@@ -202,9 +234,13 @@ add_compile_options(
 	-Werror=write-strings
 	-Werror=overflow
 	-Wsizeof-pointer-memaccess
+	-Wsizeof-array-argument
 )
-if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 7)
-	add_compile_options(-Werror=alloc-zero -Werror=alloca -Werror=stringop-overflow)
+if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 6)
+	add_compile_options(-Wchkp)
+	if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 7)
+		add_compile_options(-Werror=alloc-zero -Werror=alloca -Werror=stringop-overflow)
+	endif()
 endif()
 
 option(EFFCXX "Enable Effective C++ Warnings (very noisy on correct c++11 code)"  OFF)
@@ -225,7 +261,7 @@ add_compile_options(
 # additional debug informations
 option(DEBUG_ITERATORS "Additional debug information" OFF)
 if(DEBUG_ITERATORS)
-    message(" ===== Enabled additional debug information for iterators =====")
+	message(" ===== Enabled additional debug information for iterators =====")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC")
 endif()
 
