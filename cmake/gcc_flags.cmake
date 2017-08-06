@@ -395,8 +395,9 @@ endif()
 
 option(CHANGE_CHAR_SIGN "Change sign of char to test code for portability"  OFF)
 if(CHANGE_CHAR_SIGN)
-	set(sign_char_values "-funsigned-char,-fsigned-char" CACHE STRING "List of possible values for the sign of char cache variable")
+	set(sign_char_values "-funsigned-char;-fsigned-char" CACHE STRING "List of possible values for the sign of char cache variable")
 	set(sign_char "-fsigned-char" CACHE STRING "Value chosen by the user at configure time")
+	set_property(CACHE sign_char PROPERTY STRINGS ${sign_char_values})
 	add_compile_options(${sign_char})
 endif()
 
