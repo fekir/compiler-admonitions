@@ -317,7 +317,7 @@ add_compile_options(
 
 ##################################################################
 # additional debug informations
-option(DEBUG_ITERATORS "Additional debug information" OFF)
+option(DEBUG_ITERATORS "Additional debug information with glibc" OFF)
 if(DEBUG_ITERATORS)
 	message(" ===== Enabled additional debug information for iterators =====")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC")
