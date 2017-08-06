@@ -87,6 +87,11 @@ if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
 			-Wsubobject-linkage
 			-Wunused-const-variable=2
 		)
+		if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 7)
+			add_compile_options(
+				-Wbuiltin-declaration-mismatch
+			)
+		endif()
 	endif()
 endif()
 
@@ -95,6 +100,11 @@ add_compile_options(
 	-Werror=builtin-macro-redefined
 	-Werror=endif-labels
 )
+if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 7)
+	add_compile_options(
+		-Wexpansion-to-defined
+	)
+endif()
 
 # deprecation
 add_compile_options(
@@ -116,9 +126,7 @@ add_compile_options(
 	-Wmissing-field-initializers
 	-Wvirtual-move-assign
 )
-if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
-	add_compile_options(-Werror=memset-transposed-args)
-elseif(CMAKE_CXX_COMPILER_VERSION LESSER_EQUAL 4)
+if(CMAKE_CXX_COMPILER_VERSION LESSER_EQUAL 4)
 	add_compile_options(-Wno-missing-field-initializers) # otherwise S s = {}; issues warning
 endif()
 
@@ -136,7 +144,10 @@ if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 6)
 	)
 	if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 7)
 		add_compile_options(
+			-Wdangling-else
 			-Wduplicated-branches
+			-Wimplicit-fallthrough
+			-Wswitch-unreachable
 		)
 	endif()
 endif()
@@ -205,6 +216,12 @@ if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
 	add_compile_options(
 		-Wformat-signedness
 	)
+	if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 7)
+		add_compile_options(
+			-Wformat-overflow
+			-Wformat-truncation
+		)
+	endif()
 endif()
 
 # exception safety
@@ -261,15 +278,27 @@ add_compile_options(
 	-Wsizeof-pointer-memaccess
 	-Wsizeof-array-argument
 )
-if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 6)
+if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
 	add_compile_options(
-		-Wchkp
-		-Wplacement-new=2
-		-Wscalar-storage-order
-		-Wnull-dereference
+		-Werror=memset-transposed-args
 	)
-	if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 7)
-		add_compile_options(-Werror=alloc-zero -Werror=alloca -Werror=stringop-overflow)
+	if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 6)
+		add_compile_options(
+			-Wchkp
+			-Wplacement-new=2
+			-Wscalar-storage-order
+			-Wnull-dereference
+		)
+		if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 7)
+			add_compile_options(
+				-Waligned-new=all
+				-Werror=alloc-zero
+				-Werror=alloca
+				-Werror=stringop-overflow
+				-Wmemset-elt-size
+				-Wpointer-compare
+			)
+		endif()
 	endif()
 endif()
 
