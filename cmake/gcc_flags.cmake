@@ -74,11 +74,20 @@ add_compile_options(
 
 	-Wvarargs
 )
+
 if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
 	add_compile_options(
 		-Wodr
 		-Wsized-deallocation
 	)
+	if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 6)
+		add_compile_options(
+			-Wignored-attributes
+			-Wmisleading-indentation
+			-Wsubobject-linkage
+			-Wunused-const-variable=2
+		)
+	endif()
 endif()
 
 # macro
@@ -122,9 +131,13 @@ add_compile_options(
 	-Wenum-compare
 )
 if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 6)
-	add_compile_options(-Wduplicated-cond)
+	add_compile_options(
+		-Wduplicated-cond
+	)
 	if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 7)
-		add_compile_options(-Wduplicated-branches)
+		add_compile_options(
+			-Wduplicated-branches
+		)
 	endif()
 endif()
 
@@ -141,6 +154,7 @@ add_compile_options(
 	-Wint-to-pointer-cast
 )
 
+
 # arithmetic/numeric warnings
 add_compile_options(
 	-Wconversion
@@ -148,7 +162,6 @@ add_compile_options(
 	-Wsign-compare
 	-Wsign-promo
 	-Wsign-conversion
-	-Werror=shift-overflow
 	-Werror=div-by-zero
 	-ftrapv
 )
@@ -157,6 +170,12 @@ if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
 		-Werror=shift-count-negative
 		-Werror=shift-count-overflow
 	)
+	if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 6)
+		add_compile_options(
+			-Wshift-negative-value
+			-Werror=shift-overflow
+		)
+	endif()
 endif()
 
 
@@ -200,11 +219,17 @@ if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
 		-Wlogical-not-parentheses
 		-Wswitch-bool
 	)
-	if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 7)
+
+	if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
 		add_compile_options(
-			-Werror=bool-operation
-			-Wint-in-bool-context
+			-Wtautological-compare
 		)
+		if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 7)
+			add_compile_options(
+				-Werror=bool-operation
+				-Wint-in-bool-context
+			)
+		endif()
 	endif()
 endif()
 # suggestions for improving code
@@ -237,7 +262,12 @@ add_compile_options(
 	-Wsizeof-array-argument
 )
 if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 6)
-	add_compile_options(-Wchkp)
+	add_compile_options(
+		-Wchkp
+		-Wplacement-new=2
+		-Wscalar-storage-order
+		-Wnull-dereference
+	)
 	if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 7)
 		add_compile_options(-Werror=alloc-zero -Werror=alloca -Werror=stringop-overflow)
 	endif()
@@ -255,7 +285,6 @@ endif()
 add_compile_options(
 	-Wmissing-include-dirs
 )
-
 
 ##################################################################
 # additional debug informations
