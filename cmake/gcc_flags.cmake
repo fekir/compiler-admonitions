@@ -126,8 +126,8 @@ add_compile_options(
 	-Wmissing-field-initializers
 	-Wvirtual-move-assign
 )
-if(CMAKE_CXX_COMPILER_VERSION LESSER_EQUAL 4)
-	add_compile_options(-Wno-missing-field-initializers) # otherwise S s = {}; issues warning
+if(CMAKE_CXX_COMPILER_VERSION LESS_EQUAL 4)
+	add_compile_options( -Wno-missing-field-initializers) # otherwise S s = {}; issues warning
 endif()
 
 # switch/branches
