@@ -1,66 +1,18 @@
 ##################################################################
 # Settings for the GCC compiler (should work with >=4.8)
 
-##################################################################
-# language, use CMAKE_CXX_STANDARD, CMAKE_CXX_STANDARD_REQUIRED, CXX_EXTENSIONS if possible
-#add_compile_options(-std=c++14)
-
-##################################################################
-# compiler warnings, should be enabled on every project
-# unlike msvc, -Wall does not enable all warnings
-
-# generic warnings/errors
-add_compile_options(
+# Collect compiler warnings
+set(ADMONITIONS_WARNINGS
+	# basic
 	-Wall
 	-Wextra
 	-pedantic-errors
-	-Werror=pedantic
-	-Werror=main
 	-Wunreachable-code
 	-Wunused
 	-Wunknown-pragmas
 	-Wpragmas
-	-Werror=return-type
-)
 
-# portability
-add_compile_options(
-	-Werror=multichar
-	-Werror=address
-	-Werror=sequence-point
-	-Werror=cpp
-	-Werror=strict-aliasing
-	-Werror=strict-null-sentinel
-	-Werror=trigraphs
-)
-
-# extensions
-add_compile_options(
-	-Werror=pointer-arith
-	-fno-nonansi-builtins
-	-fstrict-enums
-	-fvisibility-inlines-hidden
-)
-
-# multiple declaration, shadowing, eval undefined identifier
-add_compile_options(
-	-Wshadow
-	-Wundef
-	-Werror=redundant-decls
-)
-
-# others
-add_compile_options(
-	-Waggressive-loop-optimizations # generic UB
-	-Werror=free-nonheap-object     # ponter arith
-	-Wignored-qualifiers
-	-Wmissing-declarations   # should set function in anonym namespace or declare it to avoid possible clashes
-	-Wnarrowing
-	-Wpacked
-	-Wparentheses
-	-Werror=return-local-addr
-
-	# unused /unnecessary code
+	# unused or unnecessary code
 	-Wunused-but-set-parameter
 	-Wunused-but-set-variable
 	-Wunused-function
@@ -72,89 +24,20 @@ add_compile_options(
 	-Wunused-variable
 	-Wuseless-cast
 
+	-Wignored-qualifiers
+	-Wmissing-declarations   # should set function in anonymous namespace or declare it to avoid possible clashes
+	-Wnarrowing
+	-Wpacked
+	-Wparentheses
+	-Waggressive-loop-optimizations # generic UB
 	-Wvarargs
-)
 
-if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
-	add_compile_options(
-		-Wodr
-		-Wsized-deallocation
-	)
-	if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 6)
-		add_compile_options(
-			-Wignored-attributes
-			-Wmisleading-indentation
-			-Wsubobject-linkage
-			-Wunused-const-variable=2
-		)
-		if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 7)
-			add_compile_options(
-				-Wbuiltin-declaration-mismatch
-			)
-		endif()
-	endif()
-endif()
-
-# macro
-add_compile_options(
-	-Werror=builtin-macro-redefined
-	-Werror=endif-labels
-)
-if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 7)
-	add_compile_options(
-		-Wexpansion-to-defined
-	)
-endif()
-
-# deprecation
-add_compile_options(
+	# deprecation
 	-Wdeprecated
 	-Wdeprecated-declarations
-)
 
-# class/structs and init
-add_compile_options(
-	-Wctor-dtor-privacy
-	-Werror=non-virtual-dtor
-	-Werror=reorder
-	-Werror=uninitialized
-	-Werror=maybe-uninitialized
-	-Werror=delete-non-virtual-dtor
-	-Winherited-variadic-ctor
-	-Werror=init-self
-	-Werror=invalid-offsetof
-	-Wmissing-field-initializers
-	-Wvirtual-move-assign
-)
-if(CMAKE_CXX_COMPILER_VERSION LESS_EQUAL 4)
-	add_compile_options( -Wno-missing-field-initializers) # otherwise S s = {}; issues warning
-endif()
-
-# switch/branches
-add_compile_options(
-	-Wswitch
-	-Wswitch-default
-	-Wswitch-enum
-	-Wempty-body
-	-Wenum-compare
-)
-if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 6)
-	add_compile_options(
-		-Wduplicated-cond
-	)
-	if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 7)
-		add_compile_options(
-			-Wdangling-else
-			-Wduplicated-branches
-			-Wimplicit-fallthrough
-			-Wswitch-unreachable
-		)
-	endif()
-endif()
-
-# nullptr and casts warnings (may generate a lot of warnings when interacting with old code or C code)
-add_compile_options(
-	-Wzero-as-null-pointer-constant
+	# nullptr and casts warnings (might generate many warnings when interacting with old code or C code)
+	-Wzero-as-null-pointer-constant # does not trigger warning with NULL, but with 0 yes
 	-Wold-style-cast
 	-Wuseless-cast
 	-Wnonnull
@@ -163,103 +46,217 @@ add_compile_options(
 	-Werror=null-dereference
 	-Wconversion-null
 	-Wint-to-pointer-cast
-)
 
+	# multiple declaration, shadowing, eval undefined identifier
+	-Wshadow
+	-Wundef
 
-# arithmetic/numeric warnings
-add_compile_options(
+	# class/struct and init
+	-Wctor-dtor-privacy
+	-Winherited-variadic-ctor
+	-Wmissing-field-initializers
+	-Wvirtual-move-assign
+
+	# switch and branches
+	-Wswitch
+	-Wswitch-default
+	-Wswitch-enum
+	-Wempty-body
+	-Wenum-compare
+
+	# arithmetic/numeric warnings
 	-Wconversion
 	-Wfloat-equal
 	-Wsign-compare
 	-Wsign-promo
 	-Wsign-conversion
-	-Werror=div-by-zero
-	-ftrapv
-)
-if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
-	add_compile_options(
-		-Werror=shift-count-negative
-		-Werror=shift-count-overflow
-	)
-	if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 6)
-		add_compile_options(
-			-Wshift-negative-value
-			-Werror=shift-overflow
-		)
-	endif()
-endif()
 
-
-
-# logical operations
-add_compile_options(
+	# logical operations
 	-Wlogical-op
-)
 
-# possible code structure problem
-add_compile_options(
+	# code structure
 	-Wdisabled-optimization
-)
+	-Wmissing-include-dirs
 
-# formatting
-add_compile_options(
+	# formatting
 	-Wformat=2
 	-Wformat-nonliteral
 	-Wformat-y2k
-	-Werror=format
-	-Werror=format-security
-	-Werror=format-extra-args
-	-Wformat-contains-nul
-	-Wformat-zero-length
+
+	# memory
+	-Waddress
+	-Wsizeof-pointer-memaccess
+	-Wsizeof-array-argument
 )
-if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
-	add_compile_options(
-		-Wformat-signedness
+
+if(CMAKE_CXX_COMPILER_VERSION LESS_EQUAL 4)
+	set(ADMONITIONS_WARNINGS ${ADMONITIONS_WARNINGS}
+			# class/struct and init
+			-Wno-missing-field-initializers # otherwise S s = {}; issues warning
 	)
-	if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 7)
-		add_compile_options(
-			-Wformat-overflow
-			-Wformat-truncation
-		)
-	endif()
-endif()
+elseif(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
+	set(ADMONITIONS_WARNINGS ${ADMONITIONS_WARNINGS}
+		# basic
+		-Wodr
+		-Wsized-deallocation
 
-# exception safety
-add_compile_options(
-	-Werror=terminate
-)
+		# formatting
+		-Wformat-signedness
 
-# operations on booleans
-if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
-	add_compile_options(
-		-Werror=bool-compare
+		# bool
 		-Wlogical-not-parentheses
 		-Wswitch-bool
+		-Wtautological-compare
 	)
+	if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 6)
+		set(ADMONITIONS_WARNINGS ${ADMONITIONS_WARNINGS}
+			# basic
+			-Wignored-attributes
+			-Wmisleading-indentation
+			-Wsubobject-linkage
+			-Wunused-const-variable=2
+			-Wduplicated-cond
 
-	if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
-		add_compile_options(
-			-Wtautological-compare
+			# arithmetic/numeric
+			-Wshift-negative-value
+
+			# memory
+			-Wchkp
+			-Wplacement-new=2
+			-Wscalar-storage-order
+			-Wnull-dereference
 		)
 		if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 7)
-			add_compile_options(
-				-Werror=bool-operation
+			set(ADMONITIONS_WARNINGS ${ADMONITIONS_WARNINGS}
+				# basic
+				-Wbuiltin-declaration-mismatch
+
+				# portability
+				-Wexpansion-to-defined
+
+				# switch/branches
+				-Wdangling-else
+				-Wduplicated-branches
+				-Wimplicit-fallthrough
+				-Wswitch-unreachable
+
+				# formatting
+				-Wformat-overflow
+				-Wformat-truncation
+
+				# memory
+				-Waligned-new=all
+				-Wmemset-elt-size
+				-Wpointer-compare
+
+				# boolean
 				-Wint-in-bool-context
 			)
 		endif()
 	endif()
 endif()
-# suggestions for improving code
-add_compile_options(
+
+# Collect compiler errors
+set(ADMONITIONS_ERRORS
+	# basic
+	-Werror=return-type
+	-Werror=pedantic
+	-Werror=main
+	# portability
+	-Werror=multichar
+	-Werror=address
+	-Werror=sequence-point
+	-Werror=cpp
+	-Werror=strict-aliasing
+	-Werror=strict-null-sentinel
+	-Werror=trigraphs
+
+	# nullptr and casts warnings (might generate many warnings when interacting with old code or C code)
+	-Werror=null-dereference
+
+	# extensions
+	-Werror=pointer-arith # arithmetic on void*
+
+	# multiple declaration, shadowing, eval undefined identifier
+	-Werror=redundant-decls
+
+	-Werror=free-nonheap-object
+	-Werror=return-local-addr
+
+	# macro
+	-Werror=builtin-macro-redefined
+	-Werror=endif-labels
+
+	# class/struct and init
+	-Werror=non-virtual-dtor
+	-Werror=reorder
+	-Werror=uninitialized
+	-Werror=maybe-uninitialized
+	-Werror=delete-non-virtual-dtor
+	-Werror=init-self
+	-Werror=invalid-offsetof
+
+	# arithmetic/numeric
+	-Werror=div-by-zero
+
+	# formatting
+	-Werror=format
+	-Werror=format-security
+	-Werror=format-extra-args
+	-Wformat-contains-nul
+	-Wformat-zero-length
+
+	# exception safety
+	-Werror=terminate
+
+	# memory
+	-Werror=vla
+	-Werror=array-bounds
+	-Werror=write-strings
+	-Werror=overflow
+)
+if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
+	set(ADMONITIONS_ERRORS ${ADMONITIONS_ERRORS}
+		# arithmetic/numeric
+		-Werror=shift-count-negative
+		-Werror=shift-count-overflow
+
+		# memory
+		-Werror=memset-transposed-args
+
+		# bool
+		-Werror=bool-compare
+	)
+	if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 6)
+		set(ADMONITIONS_ERRORS ${ADMONITIONS_ERRORS}
+			# arithmetic/numeric
+			-Werror=shift-overflow
+		)
+		if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 7)
+			set(ADMONITIONS_ERRORS ${ADMONITIONS_ERRORS}
+				# boolean
+				-Werror=bool-operation
+
+				# memory
+				-Werror=alloc-zero
+				-Werror=alloca
+				-Werror=stringop-overflow
+			)
+		endif()
+	endif()
+endif()
+
+# Collect compiler suggestions
+set(ADMONITIONS_SUGGESTIONS
 	# formatting
 	-Wsuggest-attribute=format
 	# function signature
 	-Wsuggest-attribute=const
-	-Wsuggest-attribute=pure
+	#-Wsuggest-attribute=pure
 	-Wsuggest-attribute=noreturn
 )
 if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
-	add_compile_options(
+	set(ADMONITIONS_SUGGESTIONS ${ADMONITIONS_SUGGESTIONS}
 		# inheritance
 		-Wsuggest-final-methods
 		-Wsuggest-final-types
@@ -267,137 +264,54 @@ if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
 	)
 endif()
 
-
-# memory
-add_compile_options(
-	-Waddress
-	-Werror=vla
-	-Werror=array-bounds
-	-Werror=write-strings
-	-Werror=overflow
-	-Wsizeof-pointer-memaccess
-	-Wsizeof-array-argument
+# Collect compiler extensions
+set(ADMONITIONS_EXTENSIONS
+	-fno-nonansi-builtins
+	-fstrict-enums
+	-fvisibility-inlines-hidden
+	# arithmetic/numeric
+	-ftrapv
 )
+
+
+# Compiler options
+
+## additional debug informations - FIXME: it is libc-specific and not compiler
+set(ADMONITIONS_DEF_DEBUG_ITERATORS -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC)
+
+set(ADMONITIONS_COMPILE_LINK_OPT_SAN_UNDEFINED        -fsanitize=undefined)
+set(ADMONITIONS_COMPILE_LINK_OPT_LINKER_SAN_ADD       -fsanitize=address)
+set(ADMONITIONS_COMPILE_LINK_OPT_LINKER_SAN_UNDEFINED -fsanitize=undefined)
+set(ADMONITIONS_COMPILE_LINK_OPT_LINKER_SAN_THREAD    -fsanitize=thread)
+
+set(ADMONITIONS_COMPILE_OPT_PROFILING -pg)
+set(ADMONITIONS_COMPILE_OPT_COVERAGE --coverage)
+
+set(ADMONITIONS_COMPILE_OPT_RELEASE_FORTIFY -D_FORTIFY_SOURCE=2 -O2)
+set(ADMONITIONS_COMPILE_OPT_DEBUG_FORTIFY   -D_FORTIFY_SOURCE=1)
+
+
+set(ADMONITIONS_COMPILE_OPT_STACK_PROTECTOR_ALL -fstack-protector-all)
 if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
-	add_compile_options(
-		-Werror=memset-transposed-args
-	)
-	if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 6)
-		add_compile_options(
-			-Wchkp
-			-Wplacement-new=2
-			-Wscalar-storage-order
-			-Wnull-dereference
-		)
-		if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 7)
-			add_compile_options(
-				-Waligned-new=all
-				-Werror=alloc-zero
-				-Werror=alloca
-				-Werror=stringop-overflow
-				-Wmemset-elt-size
-				-Wpointer-compare
-			)
-		endif()
-	endif()
-endif()
-
-option(EFFCXX "Enable Effective C++ Warnings (very noisy on correct c++11 code)"  OFF)
-if(EFFCXX)
-	message(" ===== Enabled Effective C++ Warnings =====")
-	add_compile_options(-Weffc++)
-endif()
-
-
-##################################################################
-# project structure
-add_compile_options(
-	-Wmissing-include-dirs
-)
-
-##################################################################
-# additional debug informations
-option(DEBUG_ITERATORS "Additional debug information with glibc" OFF)
-if(DEBUG_ITERATORS)
-	message(" ===== Enabled additional debug information for iterators =====")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC")
-endif()
-
-
-##################################################################
-# sanitizers (checks made at runtime)
-# You can choose only one(!)
-set(SanitizerValues "NONE;SANADD;SANUNDEF;SANTHREAD" CACHE STRING
-	"List of possible values for the sanitizers")
-set(SanValue "SANUNDEF" CACHE STRING
-	"SanValue chosen by the user at CMake configure time")
-set_property(CACHE SanValue PROPERTY STRINGS ${SanitizerValues})
-
-# not using add_compile_options since since flag is also used by the linker
-if("${SanValue}" STREQUAL "SANADD")
-	message(" ===== Enable sanitizer for addresses ===== ")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address")
-elseif("${SanValue}" STREQUAL "SANUNDEF")
-	message(" ===== Enable sanitizer for UB ===== ")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined")
-elseif("${SanValue}" STREQUAL "SANTHREAD")
-	message(" ===== Enable sanitizer for threads ===== ")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=thread")
-endif()
-
-option(PROFILE "Enable profiling" OFF)
-if(PROFILE)
-	message(" ===== Enable profiling ===== ")
-	add_compile_options(-pg)
-endif()
-
-##################################################################
-# mitigations
-# abort and provide some useful message instead of ignoring errors, crash at another random place or leave some vulnerability open
-option(FORTIFY "Enable fortify sources (already enabled for release target, also enables optimizations)" OFF)
-if(FORTIFY)
-	message(" ===== Enable fortify sources (always enabled for release target, also enables optimizations) ===== ")
-	add_definitions(-D_FORTIFY_SOURCE=2 -O2)
-endif()
-# FIXME: add check if compiling with -O1, in that case we should use -D_FORTIFY_SOURCE=1...
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -D_FORTIFY_SOURCE=2") # =1 when using -O1..
-
-# not using add_compile_options since since flag is also used by the linker
-option(RELRO "Enable full relro" OFF)
-if(RELRO)
-    message(" ===== Enabled full relro =====")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-z,relro,-z,now")
+	set(ADMONITIONS_COMPILE_OPT_STACK_PROTECTOR -fstack-protector-strong)
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-z,relro")
+	set(ADMONITIONS_COMPILE_OPT_STACK_PROTECTOR -fstack-protector)
 endif()
+set(ADMONITIONS_COMPILE_OPT_STACK_PROTECTOR ${ADMONITIONS_COMPILE_OPT_STACK_PROTECTOR} -fstack-check)
 
-option(STACK_PROTECTOR "Enable stack protector on all functions")
-if(STACK_PROTECTOR)
-    message(" ===== Enabling full stack protector =====")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fstack-protector-all")
-else()
-    if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fstack-protector-strong")
-    else()
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fstack-protector")
-    endif()
-endif()
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fstack-check")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pie -fpie -fpic -fPIC")
-
+set(ADMONITIONS_COMPILE_OPT_PIE -pie -fpie -fpic -fPIC)
 if( CMAKE_SYSTEM_NAME STREQUAL "Windows" )
 	# enable ASLR
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,dynamicbase ")
+	set(ADMONITIONS_COMPILE_OPT_PIE ${ADMONITIONS_COMPILE_OPT_PIE} -Wl,dynamicbase)
 	# enable DEP
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,nxcompat")
+	set(ADMONITIONS_COMPILE_OPT_PIE ${ADMONITIONS_COMPILE_OPT_PIE} -Wl,nxcompat)
 endif()
 
-option(CHANGE_CHAR_SIGN "Change sign of char to test code for portability"  OFF)
-if(CHANGE_CHAR_SIGN)
-	set(sign_char_values "-funsigned-char;-fsigned-char" CACHE STRING "List of possible values for the sign of char cache variable")
-	set(sign_char "-fsigned-char" CACHE STRING "Value chosen by the user at configure time")
-	set_property(CACHE sign_char PROPERTY STRINGS ${sign_char_values})
-	add_compile_options(${sign_char})
-endif()
+set(ADMONITIONS_COMPILE_OPT_RELRO -Wl,-z,relro,-z)
+set(ADMONITIONS_COMPILE_OPT_RELRO_FULL ${ADMONITIONS_COMPILE_OPT_RELRO},now)
 
+
+# useful for testing portability
+set(ADMONITIONS_COMPILE_OPT_CHAR_SIGNED     -fsigned-char)
+set(ADMONITIONS_COMPILE_OPT_CHAR_UNSIGNED -funsigned-char)

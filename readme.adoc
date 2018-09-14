@@ -1,0 +1,61 @@
+= Compiler admonitions
+
+
+Focus of this project is to provide a collection of compiler flags that can be used by default.
+
+Those flags are provided by `${ADMONITIONS_WARNINGS}` and `${ADMONITIONS_ERRORS}`, and ideally they should be applicable on most projects.
+
+There are other flags, for example for enabling sanitizers, stack checkers, additional debug informations, that can change the runtime behaviour of the program.
+Those settings can be compile options and/or linker options, and it's normally indicated by the variable name: `${ADMONITIONS_COMPILE_LINK_OPT_*}`,`${ADMONITIONS_COMPILE_OPT_*}`,`${ADMONITIONS_LINK_OPT_*}`
+
+
+For example, enabling flags on a single target:
+
+----
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+
+include(compiler_settings)
+
+target_compile_options(<target>
+	<INTERFACE|PUBLIC|PRIVATE>
+		${ADMONITIONS_WARNINGS}
+		${ADMONITIONS_ERRORS}
+		${ADMONITIONS_COMPILE_LINK_OPT_SAN_UNDEFINED}
+)
+target_compile_definitions(<target>
+	<INTERFACE|PUBLIC|PRIVATE>
+		${ADMONITIONS_DEF_DEBUG_ITERATORS}
+)
+target_linker_settings(<target>
+	<INTERFACE|PUBLIC|PRIVATE>
+		${ADMONITIONS_COMPILE_LINK_OPT_SAN_UNDEFINED}
+)
+
+----
+
+For warning and error flags on all targets, without even modifying the `CMakeLists.txt` file:
+
+----
+# default_compiler_flags.txt
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+
+include(compiler_settings)
+string (REPLACE ";" " " ADMONITIONS_WARNINGS_STR "${ADMONITIONS_WARNINGS}")
+string (REPLACE ";" " " ADMONITIONS_ERRORS_STR "${ADMONITIONS_ERRORS}")
+string (REPLACE ";" " " ADMONITIONS_SUGGESTIONS_STR "${ADMONITIONS_SUGGESTIONS}")
+string (REPLACE ";" " " ADMONITIONS_EXTENSIONS_STR "${ADMONITIONS_EXTENSIONS}")
+
+#set(CMAKE_C_FLAGS_INIT                  "-Wall -std=c99")
+#set(CMAKE_C_FLAGS_DEBUG_INIT            "-g")
+#set(CMAKE_C_FLAGS_MINSIZEREL_INIT       "-Os -DNDEBUG")
+#set(CMAKE_C_FLAGS_RELEASE_INIT          "-O4 -DNDEBUG")
+#set(CMAKE_C_FLAGS_RELWITHDEBINFO_INIT   "-O2 -g")
+----
+
+and execute
+
+----
+mkdir build && cd build
+cmake -DCMAKE_USER_MAKE_RULES_OVERRIDE=$(pwd)/path/to/default_compiler_flags.txt ..
+----
+
