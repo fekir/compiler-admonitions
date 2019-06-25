@@ -36,6 +36,7 @@ set(ADMONITIONS_ERRORS
 
 ## additional debug informations - FIXME: it is libc-specific and not compiler
 set(ADMONITIONS_DEF_DEBUG_ITERATORS -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC)
+#set(ADMONITIONS_DEF_DEBUG_ITERATORS -D_LIBCPP_DEBUG)
 
 
 set(ADMONITIONS_COMPILE_LINK_OPT_SAN_UNDEFINED        -fsanitize=undefined)

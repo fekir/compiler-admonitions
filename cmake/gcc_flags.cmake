@@ -121,11 +121,15 @@ elseif(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 5)
 			-Wshift-negative-value
 
 			# memory
-			-Wchkp
 			-Wplacement-new=2
 			-Wscalar-storage-order
 			-Wnull-dereference
 		)
+		if(CMAKE_CXX_COMPILER_VERSION LESS 9)
+			set(ADMONITIONS_WARNINGS ${ADMONITIONS_WARNINGS}
+				-Wchkp
+			)
+		endif()
 		if(CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 7)
 			set(ADMONITIONS_WARNINGS ${ADMONITIONS_WARNINGS}
 				# basic
@@ -251,7 +255,7 @@ set(ADMONITIONS_SUGGESTIONS
 	# formatting
 	-Wsuggest-attribute=format
 	# function signature
-	-Wsuggest-attribute=const
+	#-Wsuggest-attribute=const
 	#-Wsuggest-attribute=pure
 	-Wsuggest-attribute=noreturn
 )
